@@ -1,4 +1,5 @@
 import React, { useReducer, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { getSocket } from "../ws";
 import {
   createGame,
@@ -8,11 +9,10 @@ import {
   GAMES,
   GAMES_UPDATED,
 } from "../ws/events";
-import { useNavigate } from "react-router-dom";
 
 const Main = () => {
   const socket = getSocket();
-  const navigate = useNavigate();
+  const history = useHistory();
 
   const [{ games, loading, isCreatingGame }, setState] = useReducer(
     (prevState, state) => ({ ...prevState, ...state }),
@@ -27,9 +27,9 @@ const Main = () => {
     function messageHandler(msg) {
       const message = JSON.parse(msg.data);
       if (message.type === GAMES || message.type === GAMES_UPDATED) {
-        updateGamesList(message);
+        updateGamesList(message.games);
       } else if (message.type === JOIN_GAME) {
-        navigate("/lobby");
+        history.push("/lobby", { lobby: message.lobby });
       }
     }
 
@@ -38,14 +38,14 @@ const Main = () => {
     return () => {
       socket.removeEventListener("message", messageHandler);
     };
-  }, [socket, navigate]);
+  }, [socket, history]);
 
   function createNewGame() {
     setState({ isCreatingGame: true });
     socket.send(createGame());
   }
 
-  function updateGamesList({ games }) {
+  function updateGamesList(games) {
     setState({ games, loading: false, isCreatingGame: false });
   }
 

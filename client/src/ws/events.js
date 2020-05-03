@@ -7,6 +7,7 @@ export const CREATE_GAME = "createGame";
 export const GAMES_UPDATED = "gamesUpdated";
 export const TOKEN = "token";
 export const SET_TOKEN = "setToken";
+export const LOBBY_UPDATE = "lobbyUpdate";
 
 export function getGames() {
   return toBlob({

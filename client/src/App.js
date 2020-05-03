@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { initSocket } from "./ws";
 import Game from "./containers/Game";
 import Main from "./containers/Main";
@@ -9,7 +9,7 @@ import { TOKEN, setSocket, requestToken } from "./ws/events";
 function App() {
   const [loading, setLoading] = useState(true);
 
-  useEffect(function() {
+  useEffect(function () {
     const socket = initSocket();
 
     // TODO: await proper socket initialization
@@ -43,11 +43,11 @@ function App() {
         <p>loading</p>
       ) : (
         <BrowserRouter>
-          <Routes>
-            <Route path="/lobby" element={<Lobby />} />
-            <Route path="/game" element={<Game />} />
-            <Route path="/" element={<Main />} />
-          </Routes>
+          <Switch>
+            <Route path="/lobby" component={Lobby} />
+            <Route path="/game" component={Game} />
+            <Route path="/" component={Main} />
+          </Switch>
         </BrowserRouter>
       )}
     </>

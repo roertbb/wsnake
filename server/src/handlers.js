@@ -22,39 +22,31 @@ exports.initHandlers = function () {
 function handleCreateToken(socket, message) {
   const token = uuid();
   players.set(socket, new Player(socket, token));
-
   socket.send(getToken(token));
 }
 
 function handleGetGames(socket, message) {
-  const gamesData = Array.from(games.values(), Game.parseInfo);
-
+  const gamesData = Array.from(games.values(), Game.getGameInfo);
   socket.send(getGames(gamesData));
 }
 
 function handleCreateGame(socket, message) {
   const id = uuid();
   games.set(id, new Game(id));
-
-  const gamesData = Array.from(games.values(), Game.parseInfo);
+  const gamesData = Array.from(games.values(), Game.getGameInfo);
   broadcastToLobby(getGames(gamesData));
 }
 
 function handleJoinGame(socket, message) {
   const { gameId } = message;
-
   const game = games.get(gameId);
   if (game.players.size < game.maxPlayers) {
     const player = players.get(socket);
-    player.game = game;
-    game.players.set(player.token, player);
+    game.addPlayer(player);
+    game.broadcastLobbyUpdate();
+    const gamesData = Array.from(games.values(), Game.getGameInfo);
+    broadcastToLobby(getGames(gamesData));
   }
-
-  const gamesData = Array.from(games.values(), Game.parseInfo);
-
-  socket.send(joinedGame(game));
-  game.broadcastLobbyData();
-  broadcastToLobby(getGames(gamesData));
 }
 
 function handleSetSocket(socket, message) {
@@ -62,10 +54,8 @@ function handleSetSocket(socket, message) {
   const player = Array.from(players.values()).find(
     (player) => player.token === token
   );
-
   players.delete(player.socket);
   players.set(socket, { ...player, socket });
-
   if (player.game) {
     // TODO: send message - redirect to proper route depending on state
   }
