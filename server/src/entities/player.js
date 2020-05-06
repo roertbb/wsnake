@@ -5,6 +5,20 @@ class Player {
     this.game = undefined;
     this.ready = false;
     this.color = undefined;
+    this.snake = [];
+  }
+
+  static get direction() {
+    return {
+      up: "up",
+      down: "down",
+      left: "left",
+      right: "right",
+    };
+  }
+
+  handleInputUpdate(direction) {
+    this.direction = direction;
   }
 }
 

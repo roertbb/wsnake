@@ -1,26 +1,7 @@
-import React, { useEffect, useReducer } from "react";
-import { useHistory } from "react-router-dom";
-import { getSocket } from "../ws";
+import React from "react";
 
-const Lobby = () => {
-  const socket = getSocket();
-  const history = useHistory();
-
-  const { maxPlayers, players } =
-    history.location && history.location.state && history.location.state.lobby;
-
-  const [{ lobbyPlayers }, setState] = useReducer(
-    (prevState, state) => ({ ...prevState, ...state }),
-    {
-      lobbyPlayers: players && [],
-    }
-  );
-
-  // const [lobbyPlayers, setLobbyPlayers] = useState(players && []);
-
-  useEffect(() => {
-    return () => {};
-  }, []);
+function Lobby({ lobby, onPlayerReady }) {
+  const { players, maxPlayers } = lobby;
 
   return (
     <div>
@@ -31,11 +12,9 @@ const Lobby = () => {
           <li key={player.id}>{JSON.stringify(player)}</li>
         ))}
       </ul>
-      {/* <button disabled={isCreatingGame} onClick={createNewGame}>
-        Create new game
-      </button> */}
+      <button onClick={onPlayerReady}>Ready!</button>
     </div>
   );
-};
+}
 
 export default Lobby;
