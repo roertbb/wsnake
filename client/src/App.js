@@ -35,8 +35,9 @@ function reducer(state, action) {
   const msg = JSON.parse(action.data);
 
   if (msg.type === INIT_TOKEN) {
-    if (!localStorage.getItem("token")) socket.send(requestToken());
-    else socket.send(setToken(localStorage.getItem("token")));
+    const token = localStorage.getItem("token");
+    if (!token) socket.send(requestToken());
+    else socket.send(setToken(token));
   } else if (msg.type === TOKEN) {
     localStorage.setItem("token", msg.token);
     return state;
