@@ -2,11 +2,13 @@ const blockSize = 32;
 const boardSize = 20;
 
 const code2color = {
+  1: "#d66",
   2: "#ddd",
   3: "#6d6",
-  4: "#d66",
-  5: "#66d",
-  6: "#d66",
+  4: "#66d",
+  5: "#d6d",
+  6: "#dd6",
+  7: "#6dd",
 };
 
 export function initGame(canvas, gameState) {

@@ -1,46 +1,50 @@
 const Player = require("./player");
 const { lobbyUpdate, gameUpdate } = require("../events");
 
-const availableColors = {
-  green: "green",
-  red: "red",
-  blue: "blue",
-  orange: "orange",
-};
+const availableColors = ["green", "blue", "pink", "yellow", "cyan"];
 
 const color2Code = {
-  // fruit: 1,
-  // wall: 2,
+  // red: 1, // fruit
+  // white: 2, // wall
   green: 3,
-  red: 4,
-  blue: 5,
-  orange: 6,
+  blue: 4,
+  pink: 5,
+  yellow: 6,
+  cyan: 7,
 };
 
 const startPosition = [
   {
     snake: [
-      { x: 2, y: 0 },
-      { x: 1, y: 0 },
-      { x: 0, y: 0 },
+      { x: 2, y: 1 },
+      { x: 1, y: 1 },
+      { x: 1, y: 2 },
     ],
     direction: Player.directions.right,
   },
   {
     snake: [
-      { x: 2, y: 10 },
-      { x: 1, y: 10 },
-      { x: 0, y: 10 },
+      { x: 18, y: 17 },
+      { x: 18, y: 18 },
+      { x: 17, y: 18 },
     ],
-    direction: Player.directions.right,
+    direction: Player.directions.left,
   },
   {
     snake: [
-      { x: 2, y: 15 },
-      { x: 1, y: 15 },
-      { x: 0, y: 15 },
+      { x: 17, y: 1 },
+      { x: 18, y: 1 },
+      { x: 18, y: 2 },
     ],
-    direction: Player.directions.right,
+    direction: Player.directions.down,
+  },
+  {
+    snake: [
+      { x: 1, y: 17 },
+      { x: 1, y: 18 },
+      { x: 2, y: 18 },
+    ],
+    direction: Player.directions.up,
   },
 ];
 
@@ -50,7 +54,7 @@ class Game {
     this.players = new Map();
     this.maxPlayers = 3;
     this.boardSize = 20;
-    this.colors = Object.keys(availableColors);
+    this.colors = availableColors;
     this.board = this.getEmptyBoard();
     this.intervalRef = undefined;
     this.walls = [];
@@ -91,8 +95,32 @@ class Game {
       player.snake = [...snake];
       player.direction = direction;
     });
-    // init food position
+    this.genInitialFood();
     this.intervalRef = setInterval(() => this.update(), 100);
+  }
+
+  genInitialFood() {
+    const food = [];
+    for (let i = 0; i < 5; i++) {
+      let x = 1,
+        y = 1;
+      while (x === 1 || x === 18) x = Math.floor(Math.random() * 20);
+      while (y === 1 || y === 18) y = Math.floor(Math.random() * 20);
+      food.push({ x, y });
+    }
+    this.food = food;
+  }
+
+  genNewFood() {
+    while (true) {
+      const x = Math.floor(Math.random() * 20);
+      const y = Math.floor(Math.random() * 20);
+
+      if (this.board[y][x] === 0) {
+        this.food.push({ x, y });
+        return;
+      }
+    }
   }
 
   getEmptyBoard() {
@@ -125,8 +153,14 @@ class Game {
         }
 
         const prev = this.board[newHead.y][newHead.x];
+        let fruitEaten = false;
         if (prev === 1) {
-          // eat fruit
+          // collision with food -> grow 1 segment and gen new food
+          fruitEaten = true;
+          this.food = this.food.filter(
+            ({ x, y }) => !(x === newHead.x && y === newHead.y)
+          );
+          this.genNewFood();
         } else if (prev !== 0) {
           // collision with wall or some other player -> snake dies
           player.alive = false;
@@ -146,8 +180,10 @@ class Game {
         });
 
         // advance snake
-        player.snake.unshift(newHead);
-        player.snake.pop();
+        if (player.alive) {
+          player.snake.unshift(newHead);
+          if (!fruitEaten) player.snake.pop();
+        }
 
         player.snake.forEach((segment) => {
           board[segment.y][segment.x] = color2Code[player.color];
@@ -155,9 +191,8 @@ class Game {
       }
     });
 
-    this.walls.forEach((wall) => {
-      board[wall.y][wall.x] = 2;
-    });
+    this.food.forEach(({ x, y }) => (board[y][x] = 1));
+    this.walls.forEach(({ x, y }) => (board[y][x] = 2));
 
     this.board = board;
 
