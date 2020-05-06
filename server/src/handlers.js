@@ -56,7 +56,7 @@ function handleSetSocket(socket, message) {
 
 function handleCreateGame(socket, message) {
   const id = uuid();
-  games.set(id, new Game(id));
+  games.set(id, new Game(id, () => deleteGame(id)));
   const gamesData = Array.from(games.values(), Game.getGameInfo);
   broadcastToLobby(getGames(gamesData));
 }
@@ -96,4 +96,10 @@ function broadcastToLobby(message) {
       player.socket.send(message);
     }
   });
+}
+
+function deleteGame(id) {
+  games.delete(id);
+  const gamesData = Array.from(games.values(), Game.getGameInfo);
+  broadcastToLobby(getGames(gamesData));
 }

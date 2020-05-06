@@ -49,16 +49,18 @@ const startPosition = [
 ];
 
 class Game {
-  constructor(id) {
+  constructor(id, onGameFinished) {
     this.id = id;
     this.players = new Map();
-    this.maxPlayers = 3;
+    this.maxPlayers = 4;
     this.boardSize = 20;
     this.colors = availableColors;
     this.board = this.getEmptyBoard();
-    this.intervalRef = undefined;
+    this.updateInterval = undefined;
+    this.endTimeout = undefined;
     this.walls = [];
     this.food = [];
+    this.onGameFinished = onGameFinished;
   }
 
   static getGameInfo({ id, players, maxPlayers }) {
@@ -83,6 +85,9 @@ class Game {
 
   addPlayer(player) {
     player.game = this;
+    player.score = 0;
+    player.ready = false;
+    player.alive = true;
     player.color = this.colors[Math.floor(Math.random() * this.colors.length)];
     this.colors = this.colors.filter((col) => col != player.color);
     this.players.set(player.token, player);
@@ -94,9 +99,10 @@ class Game {
       const { snake, direction } = pos.shift();
       player.snake = [...snake];
       player.direction = direction;
+      player.lastDirection = direction;
     });
     this.genInitialFood();
-    this.intervalRef = setInterval(() => this.update(), 100);
+    this.updateInterval = setInterval(() => this.update(), 100);
   }
 
   genInitialFood() {
@@ -104,8 +110,10 @@ class Game {
     for (let i = 0; i < 5; i++) {
       let x = 1,
         y = 1;
-      while (x === 1 || x === 18) x = Math.floor(Math.random() * 20);
-      while (y === 1 || y === 18) y = Math.floor(Math.random() * 20);
+      while (x === 1 || x === 18)
+        x = Math.floor(Math.random() * this.boardSize);
+      while (y === 1 || y === 18)
+        y = Math.floor(Math.random() * this.boardSize);
       food.push({ x, y });
     }
     this.food = food;
@@ -113,8 +121,8 @@ class Game {
 
   genNewFood() {
     while (true) {
-      const x = Math.floor(Math.random() * 20);
-      const y = Math.floor(Math.random() * 20);
+      const x = Math.floor(Math.random() * this.boardSize);
+      const y = Math.floor(Math.random() * this.boardSize);
 
       if (this.board[y][x] === 0) {
         this.food.push({ x, y });
@@ -151,12 +159,14 @@ class Game {
           newHead.x = (head.x - 1 + this.boardSize) % this.boardSize;
           newHead.y = head.y;
         }
+        player.lastDirection = player.direction;
 
         const prev = this.board[newHead.y][newHead.x];
         let fruitEaten = false;
         if (prev === 1) {
           // collision with food -> grow 1 segment and gen new food
           fruitEaten = true;
+          player.score++;
           this.food = this.food.filter(
             ({ x, y }) => !(x === newHead.x && y === newHead.y)
           );
@@ -216,11 +226,27 @@ class Game {
 
   broadcastGameUpdate() {
     const boardState = this.board.map((line) => line.join("")).join("\n");
+    const score = Array.from(this.players.values(), Player.getScoreInfo);
+
+    const allDies = Array.from(this.players.values()).every(
+      (player) => !player.alive
+    );
+    if (allDies && !this.endTimeout) {
+      clearInterval(this.updateInterval);
+      this.endTimeout = setTimeout(() => this.closeGame(), 5000);
+    }
 
     Array.from(this.players.values()).forEach((player) => {
-      const msg = gameUpdate(boardState);
+      const msg = gameUpdate(boardState, score);
       player.socket.send(msg);
     });
+  }
+
+  closeGame() {
+    Array.from(this.players.values()).forEach(
+      (player) => (player.game = undefined)
+    );
+    this.onGameFinished();
   }
 }
 

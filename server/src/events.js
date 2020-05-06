@@ -28,6 +28,6 @@ exports.lobbyUpdate = function (lobby) {
   return encode({ type: events.LOBBY_UPDATE, lobby });
 };
 
-exports.gameUpdate = function (gameState) {
-  return encode({ type: events.GAME_UPDATE, gameState });
+exports.gameUpdate = function (gameState, score) {
+  return encode({ type: events.GAME_UPDATE, gameState, score });
 };
