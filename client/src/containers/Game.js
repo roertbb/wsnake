@@ -9,7 +9,7 @@ const key2Code = {
   ArrowUp: "up",
 };
 
-function Game({ socket, gameState }) {
+function Game({ socket, gameState, score }) {
   const canvas = useRef(null);
 
   useEffect(() => {
@@ -30,7 +30,18 @@ function Game({ socket, gameState }) {
     };
   }, [socket]);
 
-  return <canvas width="640" height="640" ref={canvas} />;
+  return (
+    <>
+      <canvas width="640" height="640" ref={canvas} />
+      <ul>
+        {score.map(({ color, score }) => (
+          <li>
+            {color}: {score}
+          </li>
+        ))}
+      </ul>
+    </>
+  );
 }
 
 export default Game;

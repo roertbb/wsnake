@@ -6,8 +6,8 @@ const server = new WebSocket.Server({ port: 8080 });
 
 const handlers = initHandlers();
 
-server.on("connection", socket => {
-  socket.on("message", message => {
+server.on("connection", (socket) => {
+  socket.on("message", (message) => {
     console.log(`LOG [MSG]: ${message}`);
 
     const data = decode(message);
@@ -16,3 +16,9 @@ server.on("connection", socket => {
     handlers.get(type)(socket, data);
   });
 });
+
+/*
+- reconnecting based on token
+- look'n'feel
+- binary websockets from server - check msg type
+*/

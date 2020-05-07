@@ -40,24 +40,24 @@ function handleSetSocket(socket, message) {
   const player = Array.from(players.values()).find(
     (player) => player.token === token
   );
-  players.delete(player.socket);
-  players.set(socket, { ...player, socket });
-  if (player.game) {
-    // TODO: send message - redirect to proper route depending on state
+  if (player) {
+    players.delete(player.socket);
+    player.socket = socket;
+    players.set(socket, player);
+    if (player.game) {
+      player.game.playerReconnected(player);
+    } else {
+      sendGamesData(socket);
+    }
   } else {
-    sendGamesData(socket);
+    handleCreateToken(socket, message);
   }
 }
-
-// function handleGetGames(socket, message) {
-//   const gamesData = Array.from(games.values(), Game.getGameInfo);
-//   socket.send(getGames(gamesData));
-// }
 
 function handleCreateGame(socket, message) {
   const id = uuid();
   games.set(id, new Game(id, () => deleteGame(id)));
-  const gamesData = Array.from(games.values(), Game.getGameInfo);
+  const gamesData = getGamesData();
   broadcastToLobby(getGames(gamesData));
 }
 
@@ -67,8 +67,8 @@ function handleJoinGame(socket, message) {
   if (game.players.size < game.maxPlayers) {
     const player = players.get(socket);
     game.addPlayer(player);
-    game.broadcastLobbyUpdate();
-    const gamesData = Array.from(games.values(), Game.getGameInfo);
+    game.lobbyUpdate();
+    const gamesData = getGamesData();
     broadcastToLobby(getGames(gamesData));
   }
 }
@@ -76,7 +76,7 @@ function handleJoinGame(socket, message) {
 function handlePlayerReady(socket, message) {
   const player = players.get(socket);
   player.ready = true;
-  player.game.broadcastLobbyUpdate();
+  player.game.lobbyUpdate();
 }
 
 function handleUserInput(socket, message) {
@@ -85,8 +85,10 @@ function handleUserInput(socket, message) {
 }
 
 // helpers
+const getGamesData = () => Array.from(games.values(), Game.getGameInfo);
+
 function sendGamesData(socket) {
-  const gamesData = Array.from(games.values(), Game.getGameInfo);
+  const gamesData = getGamesData();
   socket.send(getGames(gamesData));
 }
 
@@ -100,6 +102,6 @@ function broadcastToLobby(message) {
 
 function deleteGame(id) {
   games.delete(id);
-  const gamesData = Array.from(games.values(), Game.getGameInfo);
+  const gamesData = getGamesData();
   broadcastToLobby(getGames(gamesData));
 }

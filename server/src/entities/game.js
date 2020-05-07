@@ -209,7 +209,7 @@ class Game {
     this.broadcastGameUpdate();
   }
 
-  broadcastLobbyUpdate() {
+  lobbyUpdate() {
     const allPlayersReady = Array.from(this.players.values()).every(
       (player) => player.ready
     );
@@ -217,11 +217,15 @@ class Game {
     if (allPlayersReady) {
       this.gameStarted();
     } else {
-      const msg = lobbyUpdate(Game.getLobbyInfo(this));
-      Array.from(this.players.values()).forEach((player) => {
-        player.socket.send(msg);
-      });
+      this.broadcastLobbyUpdate();
     }
+  }
+
+  broadcastLobbyUpdate() {
+    const msg = lobbyUpdate(Game.getLobbyInfo(this));
+    Array.from(this.players.values()).forEach((player) => {
+      player.socket.send(msg);
+    });
   }
 
   broadcastGameUpdate() {
@@ -247,6 +251,19 @@ class Game {
       (player) => (player.game = undefined)
     );
     this.onGameFinished();
+  }
+
+  playerReconnected(player) {
+    this.players.set(player.token, player);
+    const allPlayersReady = Array.from(this.players.values()).every(
+      (player) => player.ready
+    );
+
+    if (allPlayersReady) {
+      this.broadcastGameUpdate();
+    } else {
+      this.broadcastLobbyUpdate();
+    }
   }
 }
 

@@ -46,7 +46,7 @@ function reducer(state, action) {
   } else if (msg.type === LOBBY_UPDATE) {
     return { state: states.lobby, lobby: msg.lobby };
   } else if (msg.type === GAME_UPDATE) {
-    return { state: states.game, gameState: msg.gameState };
+    return { state: states.game, gameState: msg.gameState, score: msg.score };
   }
 
   return state;
@@ -58,15 +58,14 @@ function App() {
   useEffect(function () {
     const handler = (msg) => dispatch(msg);
 
-    // TODO: await proper socket initialization
-    setTimeout(() => {
+    socket.onopen = () => {
       dispatch(initToken());
+    };
 
-      socket.addEventListener("message", handler);
-      return () => {
-        socket.removeEventListener("message", handler);
-      };
-    }, 250);
+    socket.addEventListener("message", handler);
+    return () => {
+      socket.removeEventListener("message", handler);
+    };
   }, []);
 
   function onGameJoin(gameId) {
@@ -80,8 +79,6 @@ function App() {
   function onPlayerReady() {
     socket.send(playerReady());
   }
-
-  console.log({ state });
 
   if (state.loading) {
     return <p>loading...</p>;
@@ -101,7 +98,9 @@ function App() {
   }
 
   if (state.state === states.game) {
-    return <Game gameState={state.gameState} socket={socket} />;
+    return (
+      <Game gameState={state.gameState} score={state.score} socket={socket} />
+    );
   }
 
   return <h1>oops</h1>;
