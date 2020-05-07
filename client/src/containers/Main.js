@@ -2,17 +2,38 @@ import React from "react";
 
 function Main({ games, onGameJoin, onCreateNewGame }) {
   return (
-    <div>
+    <div className="menu">
       <h1>wsnake</h1>
-      <p>available games:</p>
-      <ul>
-        {games.map((game) => (
-          <li onClick={() => onGameJoin(game.id)} key={game.id}>
-            {JSON.stringify(game)}
-          </li>
-        ))}
-      </ul>
-      <button onClick={onCreateNewGame}>Create new game</button>
+
+      {games.length ? (
+        <div className="menu__container">
+          <p>games:</p>
+          <ul>
+            {games.map(({ id, players, maxPlayers, inProgress }) => {
+              const name = id.split("-")[0];
+              const classes = ["btn", inProgress && "btn--disabled"]
+                .filter(Boolean)
+                .join(" ");
+
+              return (
+                <li onClick={() => !inProgress && onGameJoin(id)} key={id}>
+                  <button className={classes}>
+                    {name} - {players}/{maxPlayers}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : (
+        <div className="menu__container">
+          <p>no available games</p>
+          <p>- create new game -</p>
+        </div>
+      )}
+      <button className="btn" onClick={onCreateNewGame}>
+        create new game
+      </button>
     </div>
   );
 }

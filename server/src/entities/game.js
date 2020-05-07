@@ -52,6 +52,7 @@ class Game {
   constructor(id, onGameFinished) {
     this.id = id;
     this.players = new Map();
+    this.inProgress = false;
     this.maxPlayers = 4;
     this.boardSize = 20;
     this.colors = availableColors;
@@ -63,11 +64,12 @@ class Game {
     this.onGameFinished = onGameFinished;
   }
 
-  static getGameInfo({ id, players, maxPlayers }) {
+  static getGameInfo({ id, players, maxPlayers, inProgress }) {
     return {
       id,
       players: players.size,
       maxPlayers,
+      inProgress,
     };
   }
 
@@ -94,6 +96,7 @@ class Game {
   }
 
   gameStarted() {
+    this.inProgress = true;
     const pos = [...startPosition];
     Array.from(this.players.values()).forEach((player) => {
       const { snake, direction } = pos.shift();

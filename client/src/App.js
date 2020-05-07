@@ -12,6 +12,7 @@ import {
   createGame,
   playerReady,
 } from "./ws/events";
+import "./App.scss";
 
 const socket = initSocket();
 

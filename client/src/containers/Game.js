@@ -32,14 +32,22 @@ function Game({ socket, gameState, score }) {
 
   return (
     <>
-      <canvas width="640" height="640" ref={canvas} />
-      <ul>
-        {score.map(({ color, score }) => (
-          <li>
-            {color}: {score}
-          </li>
-        ))}
-      </ul>
+      <div class="container">
+        <div class="screen">
+          <div class="screen__overlay"></div>
+          <canvas width="640" height="640" ref={canvas} />
+        </div>
+
+        <ul className="points">
+          {score.map(({ color, score }) => {
+            return (
+              <li className={`points__point points__point--${color}`}>
+                {score}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </>
   );
 }

@@ -1,0 +1,215 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+$black: #121010;
+$white: #ddd;
+
+$green: #6d6;
+$greenDisabled: #686;
+$blue: #66d;
+$blueDisabled: #668;
+$pink: #d6d;
+$pinkDisabled: #868;
+$yellow: #dd6;
+$yellowDisabled: #886;
+$cyan: #6dd;
+$cyanDisabled: #688;
+
+@keyframes flicker {
+  $steps: 20;
+  @for $i from 0 through $steps {
+    #{percentage($i*(1/$steps))} {
+      opacity: random();
+    }
+  }
+}
+
+body {
+  color: $white;
+  font-family: "Press Start 2P", cursive;
+  background: $black;
+  margin-top: 10px;
+  position: relative;
+  overflow: hidden;
+
+  // flicker
+  &::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: transparentize($black, 0.9);
+    opacity: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  // scanlines
+  &::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(
+        transparentize($black, 1) 50%,
+        transparentize(darken($black, 10), 0.75) 50%
+      ),
+      linear-gradient(
+        90deg,
+        transparentize(#ff0000, 0.94),
+        transparentize(#00ff00, 0.98),
+        transparentize(#0000ff, 0.94)
+      );
+    z-index: 2;
+    background-size: 100% 6px, 6px 100%;
+    pointer-events: none;
+  }
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 656px;
+  position: relative;
+}
+
+.screen {
+  width: 640px;
+  height: 640px;
+  padding: 8px;
+
+  &__overlay {
+    background-color: transparent;
+    border-radius: 2rem;
+    border: 1rem solid;
+    border-bottom-color: #121212;
+    border-left-color: #080808;
+    border-right-color: #080808;
+    border-top-color: #020202;
+    box-shadow: inset 0 0 80px black, inset 0 0 30px black, 0 0 100px black;
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    width: 640px;
+    height: 640px;
+  }
+}
+
+.points {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  padding: 16px;
+
+  &__point {
+    margin-left: 48px;
+    margin-right: 16px;
+    width: 32px;
+    height: 16px;
+    position: relative;
+
+    &::before {
+      position: absolute;
+      content: "";
+      left: -48px;
+      width: 32px;
+      height: 16px;
+    }
+
+    &--green::before {
+      background-color: $green;
+    }
+
+    &--blue::before {
+      background-color: $blue;
+    }
+
+    &--pink::before {
+      background-color: $pink;
+    }
+
+    &--yellow::before {
+      background-color: $yellow;
+    }
+
+    &--cyan::before {
+      background-color: $cyan;
+    }
+  }
+}
+
+.btn {
+  border: 0;
+  background-color: $white;
+  color: $black;
+  font-family: "Press Start 2P", cursive;
+  font-size: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  position: relative;
+
+  &--disabled {
+    background-color: #888;
+  }
+
+  &--green {
+    background-color: $green;
+    &--disabled {
+      background-color: $greenDisabled;
+    }
+  }
+
+  &--blue {
+    background-color: $blue;
+    &--disabled {
+      background-color: $blueDisabled;
+    }
+  }
+
+  &--pink {
+    background-color: $pink;
+    &--disabled {
+      background-color: $pinkDisabled;
+    }
+  }
+
+  &--yellow {
+    background-color: $yellow;
+    &--disabled {
+      background-color: $yellowDisabled;
+    }
+  }
+
+  &--cyan {
+    background-color: $cyan;
+    &--disabled {
+      background-color: $cyanDisabled;
+    }
+  }
+}
+
+.menu {
+  text-align: center;
+
+  ul {
+    list-style: none;
+    padding: 0;
+
+    li {
+      margin-bottom: 16px;
+    }
+  }
+
+  &__container {
+    padding: 16px;
+  }
+}

@@ -64,7 +64,7 @@ function handleCreateGame(socket, message) {
 function handleJoinGame(socket, message) {
   const { gameId } = message;
   const game = games.get(gameId);
-  if (game.players.size < game.maxPlayers) {
+  if (!game.inProgress && game.players.size < game.maxPlayers) {
     const player = players.get(socket);
     game.addPlayer(player);
     game.lobbyUpdate();
