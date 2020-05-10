@@ -7,11 +7,11 @@ export const events = {
   CREATE_GAME: "createGame",
   JOIN_GAME: "joinGame",
   GAMES_UPDATE: "gamesUpdate",
-  INIT_TOKEN: "initToken",
   LOBBY_UPDATE: "lobbyUpdate",
   PLAYER_READY: "playerReady",
   GAME_UPDATE: "gameUpdate",
   USER_INPUT: "userInput",
+  INIT_TOKEN: "initToken",
 };
 
 export function initToken() {

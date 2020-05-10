@@ -1,13 +1,11 @@
 const { encode } = require("./helpers/message");
 
 const events = {
-  GAMES: "games",
-  GAMES_UPDATE: "gamesUpdate",
-  CREATE_GAME: "createGame",
-  GAMES_UPDATED: "gamesUpdated",
-  JOIN_GAME: "joinGame",
   TOKEN: "token",
   SET_TOKEN: "setToken",
+  CREATE_GAME: "createGame",
+  JOIN_GAME: "joinGame",
+  GAMES_UPDATE: "gamesUpdate",
   LOBBY_UPDATE: "lobbyUpdate",
   PLAYER_READY: "playerReady",
   GAME_UPDATE: "gameUpdate",

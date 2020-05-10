@@ -1,5 +1,5 @@
 let socket;
-const url = "ws://localhost:8080";
+const url = "ws://localhost:8000/ws";
 
 export function initSocket() {
   socket = new WebSocket(url);

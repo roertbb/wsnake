@@ -1,12 +1,18 @@
-const WebSocket = require("ws");
+const websocket = require("ws");
+const express = require("express");
+const http = require("http");
 const { initHandlers } = require("./handlers");
 const { decode } = require("./helpers/message");
 
-const server = new WebSocket.Server({ port: 8080 });
+const app = express();
+const server = http.createServer(app);
 
+app.use(express.static("public"));
+
+const ws = new websocket.Server({ server, path: "/ws" });
 const handlers = initHandlers();
 
-server.on("connection", (socket) => {
+ws.on("connection", (socket) => {
   socket.on("message", (message) => {
     console.log(`LOG [MSG]: ${message}`);
 
@@ -17,8 +23,4 @@ server.on("connection", (socket) => {
   });
 });
 
-/*
-- reconnecting based on token
-- look'n'feel
-- binary websockets from server - check msg type
-*/
+server.listen(8000);
