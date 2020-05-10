@@ -15,4 +15,4 @@ COPY ./server/package.json ./server/package-lock.json ./
 RUN npm install --production
 COPY ./server ./
 COPY --from=build-client /usr/app/build ./public/
-CMD npm run serve
+CMD NODE_PORT=$PORT npm run serve

@@ -1,11 +1,15 @@
+const getUrl = () =>
+  process.env.NODE_ENV === "production"
+    ? `wss://${window.location.host}/ws`
+    : "ws://localhost:8080/ws";
+
 let socket;
-const url = "ws://localhost:8000/ws";
 
 export function initSocket() {
-  socket = new WebSocket(url);
+  socket = new WebSocket(getUrl());
 
   socket.onmessage = (e) => {
-    console.log("LOG [MSG]:", e.data);
+    process.env.NODE_ENV === "development" && console.log("LOG [MSG]:", e.data);
   };
 
   socket.onerror = (error) => {

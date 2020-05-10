@@ -1,6 +1,9 @@
 const websocket = require("ws");
 const express = require("express");
 const http = require("http");
+const dotenv = require("dotenv");
+
+dotenv.config();
 const { initHandlers } = require("./handlers");
 const { decode } = require("./helpers/message");
 
@@ -23,4 +26,6 @@ ws.on("connection", (socket) => {
   });
 });
 
-server.listen(8000);
+const port = process.env.NODE_PORT || 8080;
+console.log("port", port);
+server.listen(port);
