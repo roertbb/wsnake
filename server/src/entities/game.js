@@ -49,7 +49,7 @@ const startPosition = [
 ];
 
 class Game {
-  constructor(id, onGameFinished) {
+  constructor(id, { onGameFinished, onGameStarted }) {
     this.id = id;
     this.players = new Map();
     this.inProgress = false;
@@ -62,6 +62,7 @@ class Game {
     this.walls = [];
     this.food = [];
     this.onGameFinished = onGameFinished;
+    this.onGameStarted = onGameStarted;
   }
 
   static getGameInfo({ id, players, maxPlayers, inProgress }) {
@@ -219,6 +220,7 @@ class Game {
 
     if (allPlayersReady) {
       this.gameStarted();
+      this.onGameStarted();
     } else {
       this.broadcastLobbyUpdate();
     }

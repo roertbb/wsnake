@@ -2,6 +2,7 @@
 
 $black: #121010;
 $white: #ddd;
+$whiteDisabled: #888;
 
 $green: #6d6;
 $greenDisabled: #686;
@@ -194,6 +195,13 @@ body {
     &--disabled {
       background-color: $cyanDisabled;
     }
+  }
+
+  &--empty {
+    background-color: $black;
+    border: 8px solid $whiteDisabled;
+    color: $whiteDisabled;
+    width: 100%;
   }
 }
 

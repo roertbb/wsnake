@@ -2,6 +2,7 @@ import React from "react";
 
 function Lobby({ lobby, onPlayerReady }) {
   const { players, maxPlayers } = lobby;
+  const availableSlots = maxPlayers - players.length;
   const token = localStorage.getItem("token");
 
   return (
@@ -25,6 +26,11 @@ function Lobby({ lobby, onPlayerReady }) {
             </li>
           );
         })}
+        {new Array(availableSlots).fill(0).map((_, idx) => (
+          <li key={idx}>
+            <button className="btn btn--empty">-</button>
+          </li>
+        ))}
       </ul>
       <p>mark when your ready</p>
       <button className="btn" onClick={onPlayerReady}>
