@@ -29,7 +29,7 @@ exports.initHandlers = function () {
 };
 
 function handleCreateToken(socket, message) {
-  const token = uuid();
+  const token = uuid().split("-")[0];
   players.set(socket, new Player(socket, token));
   socket.send(getToken(token));
   sendGamesData(socket);
@@ -55,7 +55,7 @@ function handleSetSocket(socket, message) {
 }
 
 function handleCreateGame(socket, message) {
-  const id = uuid();
+  const id = uuid().split("-")[0];
   games.set(
     id,
     new Game(id, {

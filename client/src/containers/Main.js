@@ -10,7 +10,7 @@ function Main({ games, onGameJoin, onCreateNewGame }) {
           <p>games:</p>
           <ul>
             {games.map(({ id, players, maxPlayers, inProgress }) => {
-              const name = id.split("-")[0];
+              const name = id;
               const classes = ["btn", inProgress && "btn--disabled"]
                 .filter(Boolean)
                 .join(" ");

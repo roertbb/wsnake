@@ -9,6 +9,11 @@ const key2Code = {
   ArrowUp: "up",
 };
 
+function sortScore(a, b) {
+  if (b.score > a.score) return 1;
+  return -1;
+}
+
 function Game({ socket, gameState, score }) {
   const canvas = useRef(null);
 
@@ -32,16 +37,19 @@ function Game({ socket, gameState, score }) {
 
   return (
     <>
-      <div class="container">
-        <div class="screen">
-          <div class="screen__overlay"></div>
+      <div className="container">
+        <div className="screen">
+          <div className="screen__overlay"></div>
           <canvas width="640" height="640" ref={canvas} />
         </div>
 
         <ul className="points">
-          {score.map(({ color, score }) => {
+          {score.sort(sortScore).map(({ color, score }) => {
             return (
-              <li className={`points__point points__point--${color}`}>
+              <li
+                key={color}
+                className={`points__point points__point--${color}`}
+              >
                 {score}
               </li>
             );
