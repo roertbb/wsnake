@@ -7,6 +7,10 @@ const key2Code = {
   ArrowDown: "down",
   ArrowLeft: "left",
   ArrowUp: "up",
+  KeyD: "right",
+  KeyS: "down",
+  KeyA: "left",
+  KeyW: "up",
 };
 
 function sortScore(a, b) {
