@@ -7,6 +7,7 @@ let socket;
 
 export function initSocket() {
   socket = new WebSocket(getUrl());
+  socket.binaryType = "arraybuffer";
 
   socket.onmessage = (e) => {
     process.env.NODE_ENV === "development" && console.log("LOG [MSG]:", e.data);

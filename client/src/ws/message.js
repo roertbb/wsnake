@@ -11,12 +11,10 @@ function ab2str(buf) {
   return String.fromCharCode.apply(null, new Uint8Array(buf));
 }
 
-function encode(obj) {
+export function encode(obj) {
   return str2ab(JSON.stringify(obj));
 }
 
-function decode(ab) {
+export function decode(ab) {
   return JSON.parse(ab2str(ab));
 }
-
-module.exports = { decode, encode };

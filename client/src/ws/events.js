@@ -1,5 +1,4 @@
-export const toBlob = (object) =>
-  new Blob([JSON.stringify(object)], { type: "application/json" });
+import { encode } from "./message";
 
 export const events = {
   TOKEN: "token",
@@ -15,43 +14,43 @@ export const events = {
 };
 
 export function initToken() {
-  return { data: JSON.stringify({ type: events.INIT_TOKEN }) };
+  return { data: encode({ type: events.INIT_TOKEN }) };
 }
 
 export function createGame() {
-  return toBlob({
+  return encode({
     type: events.CREATE_GAME,
   });
 }
 
 export function joinGame(gameId) {
-  return toBlob({
+  return encode({
     type: events.JOIN_GAME,
     gameId,
   });
 }
 
 export function requestToken() {
-  return toBlob({
+  return encode({
     type: events.TOKEN,
   });
 }
 
 export function setToken(token) {
-  return toBlob({
+  return encode({
     type: events.SET_TOKEN,
     token,
   });
 }
 
 export function playerReady() {
-  return toBlob({
+  return encode({
     type: events.PLAYER_READY,
   });
 }
 
 export function userInput(direction) {
-  return toBlob({
+  return encode({
     type: events.USER_INPUT,
     direction,
   });

@@ -13,6 +13,7 @@ import {
   playerReady,
 } from "./ws/events";
 import "./App.scss";
+import { decode } from "./ws/message";
 
 const socket = initSocket();
 
@@ -33,7 +34,7 @@ const initialState = {
 const { TOKEN, GAMES_UPDATE, INIT_TOKEN, GAME_UPDATE, LOBBY_UPDATE } = events;
 
 function reducer(state, action) {
-  const msg = JSON.parse(action.data);
+  const msg = decode(action.data);
 
   if (msg.type === INIT_TOKEN) {
     const token = localStorage.getItem("token");

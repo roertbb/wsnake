@@ -27,5 +27,5 @@ ws.on("connection", (socket) => {
 });
 
 const port = process.env.NODE_PORT || 8080;
-console.log("port", port);
+console.log("listening on port", port);
 server.listen(port);
