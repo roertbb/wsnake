@@ -3,14 +3,14 @@ import { initGame } from "../game";
 import { userInput } from "../ws/events";
 
 const key2Code = {
-  ArrowRight: "right",
-  ArrowDown: "down",
-  ArrowLeft: "left",
-  ArrowUp: "up",
-  KeyD: "right",
-  KeyS: "down",
-  KeyA: "left",
-  KeyW: "up",
+  39: "right",
+  40: "down",
+  37: "left",
+  38: "up",
+  68: "right",
+  83: "down",
+  65: "left",
+  87: "up",
 };
 
 function sortScore(a, b) {
@@ -27,8 +27,10 @@ function Game({ socket, gameState, score }) {
 
   useEffect(() => {
     function arrowKeyHandler(event) {
-      if (Object.keys(key2Code).includes(event.code)) {
-        const direction = key2Code[event.code];
+      const code = String(event.keyCode || event.which);
+
+      if (Object.keys(key2Code).includes(code)) {
+        const direction = key2Code[code];
         socket.send(userInput(direction));
       }
     }
