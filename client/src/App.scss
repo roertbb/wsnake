@@ -221,3 +221,88 @@ body {
     padding: 16px;
   }
 }
+
+.col {
+  display: flex;
+  min-width: 64vw;
+}
+
+.row {
+  width: 100%;
+
+  & + & {
+    margin-left: 64px;
+  }
+
+  &__qrcode {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.qrcode-wrapper {
+  padding: 10px;
+  background: white;
+}
+
+.arrow-wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.arrow-button {
+  font-size: 80px;
+  width: 25vw;
+  height: 25vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $black;
+}
+
+.arrow-left {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 2;
+  grid-row-end: 3;
+
+  &::before {
+    content: "\25C0";
+  }
+}
+
+.arrow-up {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 2;
+
+  &::before {
+    content: "\25B2";
+  }
+}
+
+.arrow-right {
+  grid-column-start: 3;
+  grid-column-end: 4;
+  grid-row-start: 2;
+  grid-row-end: 3;
+
+  &::before {
+    content: "\25B6";
+  }
+}
+
+.arrow-down {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 3;
+  grid-row-end: 4;
+
+  &::before {
+    content: "\25BC";
+  }
+}

@@ -1,6 +1,7 @@
 const websocket = require("ws");
 const express = require("express");
 const http = require("http");
+const path = require("path");
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -11,6 +12,10 @@ const app = express();
 const server = http.createServer(app);
 
 app.use(express.static("public"));
+
+app.get(["/previewer", "/join*"], function (req, res, next) {
+  res.sendFile(path.join(__dirname, "../public", "index.html"));
+});
 
 const ws = new websocket.Server({ server, path: "/ws" });
 const handlers = initHandlers();

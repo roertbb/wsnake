@@ -10,6 +10,8 @@ const events = {
   PLAYER_READY: "playerReady",
   GAME_UPDATE: "gameUpdate",
   USER_INPUT: "userInput",
+  INIT_TOKEN_AND_JOIN: "initTokenAndJoin",
+  SET_TOKEN_AND_JOIN: "setTokenAndJoin",
 };
 
 exports.events = events;

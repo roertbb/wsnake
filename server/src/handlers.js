@@ -7,12 +7,16 @@ const {
   SET_TOKEN,
   PLAYER_READY,
   USER_INPUT,
+  INIT_TOKEN_AND_JOIN,
+  SET_TOKEN_AND_JOIN,
 } = events;
 const Player = require("./entities/player");
 const Game = require("./entities/game");
+const Previewer = require("./entities/previewer");
 
 const players = new Map();
 const games = new Map();
+const previewers = new Map();
 
 exports.initHandlers = function () {
   const handlers = new Map();
@@ -22,11 +26,38 @@ exports.initHandlers = function () {
   handlers.set(TOKEN, handleCreateToken);
   handlers.set(SET_TOKEN, handleSetSocket);
   handlers.set(PLAYER_READY, handlePlayerReady);
-  handlers.set(PLAYER_READY, handlePlayerReady);
   handlers.set(USER_INPUT, handleUserInput);
+  handlers.set(INIT_TOKEN_AND_JOIN, handleCreateTokenAndJoin);
+  handlers.set(SET_TOKEN_AND_JOIN, handleSetSocketAndJoin);
 
   return handlers;
 };
+
+function handleCreateTokenAndJoin(socket, message) {
+  const token = uuid().split("-")[0];
+  players.set(socket, new Player(socket, token));
+  socket.send(getToken(token));
+  handleJoinGame(socket, message);
+}
+
+function handleSetSocketAndJoin(socket, message) {
+  const { token } = message;
+  const player = Array.from(players.values()).find(
+    (player) => player.token === token
+  );
+  if (player) {
+    players.delete(player.socket);
+    player.socket = socket;
+    players.set(socket, player);
+    if (player.game) {
+      player.game.playerReconnected(player);
+    } else {
+      handleJoinGame(socket, message);
+    }
+  } else {
+    handleCreateTokenAndJoin(socket, message);
+  }
+}
 
 function handleCreateToken(socket, message) {
   const token = uuid().split("-")[0];
@@ -56,16 +87,22 @@ function handleSetSocket(socket, message) {
 
 function handleCreateGame(socket, message) {
   const id = uuid().split("-")[0];
-  games.set(
-    id,
-    new Game(id, {
-      onGameFinished: () => deleteGame(id),
-      onGameStarted: () => {
-        const gamesData = getGamesData();
-        broadcastToLobby(getGames(gamesData));
-      },
-    })
-  );
+
+  const game = new Game(id, {
+    onGameFinished: () => deleteGame(id),
+    onGameStarted: () => {
+      const gamesData = getGamesData();
+      broadcastToLobby(getGames(gamesData));
+    },
+  });
+
+  if (message.previewer) {
+    const previewer = new Previewer(socket);
+    previewers.set(game.id, previewer);
+    game.addPreviewer(previewer);
+  }
+
+  games.set(id, game);
   const gamesData = getGamesData();
   broadcastToLobby(getGames(gamesData));
 }
@@ -73,8 +110,14 @@ function handleCreateGame(socket, message) {
 function handleJoinGame(socket, message) {
   const { gameId } = message;
   const game = games.get(gameId);
+
+  if (!game) return;
+
   if (!game.inProgress && game.players.size < game.maxPlayers) {
     const player = players.get(socket);
+
+    if (!player) return;
+
     game.addPlayer(player);
     game.lobbyUpdate();
     const gamesData = getGamesData();
@@ -111,6 +154,12 @@ function broadcastToLobby(message) {
 
 function deleteGame(id) {
   games.delete(id);
+
   const gamesData = getGamesData();
-  broadcastToLobby(getGames(gamesData));
+  const message = getGames(gamesData);
+
+  const previewer = previewers.get(id);
+  previewer.socket.send(message);
+
+  broadcastToLobby(message);
 }

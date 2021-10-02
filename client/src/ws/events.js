@@ -5,21 +5,26 @@ export const events = {
   SET_TOKEN: "setToken",
   CREATE_GAME: "createGame",
   JOIN_GAME: "joinGame",
+  JOINING_GAME: "joiningGame",
   GAMES_UPDATE: "gamesUpdate",
   LOBBY_UPDATE: "lobbyUpdate",
   PLAYER_READY: "playerReady",
   GAME_UPDATE: "gameUpdate",
   USER_INPUT: "userInput",
   INIT_TOKEN: "initToken",
+  INIT_JOINER: "initJoiner",
+  INIT_TOKEN_AND_JOIN: "initTokenAndJoin",
+  SET_TOKEN_AND_JOIN: "setTokenAndJoin",
 };
 
 export function initToken() {
   return { data: encode({ type: events.INIT_TOKEN }) };
 }
 
-export function createGame() {
+export function createGame({ previewer = false } = {}) {
   return encode({
     type: events.CREATE_GAME,
+    previewer,
   });
 }
 
@@ -28,6 +33,18 @@ export function joinGame(gameId) {
     type: events.JOIN_GAME,
     gameId,
   });
+}
+
+export function initJoiner(gameId) {
+  return { data: encode({ type: events.INIT_JOINER, gameId }) };
+}
+
+export function requestTokenAndJoin(gameId) {
+  return encode({ type: events.INIT_TOKEN_AND_JOIN, gameId });
+}
+
+export function setTokenAndJoin(token, gameId) {
+  return encode({ type: events.SET_TOKEN_AND_JOIN, token, gameId });
 }
 
 export function requestToken() {

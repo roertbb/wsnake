@@ -52,6 +52,7 @@ class Game {
   constructor(id, { onGameFinished, onGameStarted }) {
     this.id = id;
     this.players = new Map();
+    this.previewer = null;
     this.inProgress = false;
     this.maxPlayers = 4;
     this.boardSize = 20;
@@ -94,6 +95,12 @@ class Game {
     player.color = this.colors[Math.floor(Math.random() * this.colors.length)];
     this.colors = this.colors.filter((col) => col != player.color);
     this.players.set(player.token, player);
+  }
+
+  addPreviewer(previewer) {
+    previewer.game = this;
+    this.previewer = previewer;
+    this.lobbyUpdate();
   }
 
   gameStarted() {
@@ -214,11 +221,10 @@ class Game {
   }
 
   lobbyUpdate() {
-    const allPlayersReady = Array.from(this.players.values()).every(
-      (player) => player.ready
-    );
+    const playersValues = Array.from(this.players.values());
+    const allPlayersReady = playersValues.every((player) => player.ready);
 
-    if (allPlayersReady) {
+    if (allPlayersReady && playersValues.length > 1) {
       this.gameStarted();
       this.onGameStarted();
     } else {
@@ -231,6 +237,9 @@ class Game {
     Array.from(this.players.values()).forEach((player) => {
       player.socket.send(msg);
     });
+    if (this.previewer) {
+      this.previewer.socket.send(msg);
+    }
   }
 
   broadcastGameUpdate() {
@@ -245,16 +254,22 @@ class Game {
       this.endTimeout = setTimeout(() => this.closeGame(), 5000);
     }
 
+    const msg = gameUpdate(boardState, score);
     Array.from(this.players.values()).forEach((player) => {
-      const msg = gameUpdate(boardState, score);
       player.socket.send(msg);
     });
+    if (this.previewer) {
+      this.previewer.socket.send(msg);
+    }
   }
 
   closeGame() {
     Array.from(this.players.values()).forEach(
       (player) => (player.game = undefined)
     );
+    if (this.previewer) {
+      this.previewer.game = undefined;
+    }
     this.onGameFinished();
   }
 

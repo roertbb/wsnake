@@ -18,7 +18,7 @@ function sortScore(a, b) {
   return -1;
 }
 
-function Game({ socket, gameState, score }) {
+function Game({ socket, gameState, score, previewer }) {
   const canvas = useRef(null);
 
   useEffect(() => {
@@ -35,11 +35,16 @@ function Game({ socket, gameState, score }) {
       }
     }
 
-    window.addEventListener("keydown", arrowKeyHandler);
+    if (!previewer) {
+      window.addEventListener("keydown", arrowKeyHandler);
+    }
+
     return () => {
-      window.removeEventListener("keydown", arrowKeyHandler);
+      if (!previewer) {
+        window.removeEventListener("keydown", arrowKeyHandler);
+      }
     };
-  }, [socket]);
+  }, [socket, previewer]);
 
   return (
     <>
